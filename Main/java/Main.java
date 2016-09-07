@@ -6,14 +6,19 @@
  * Date: September 7, 2016
  */
 
+import java.util.Optional;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Menu;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -21,24 +26,34 @@ import javafx.event.EventHandler;
 public class Main extends Application
 {
 
-    public TextInputDialog createDialogBox() {
-        TextInputDialog dialog = new TextInputDialog("walter");
-        dialog.setTitle("Text Input Dialog");
-        dialog.setHeaderText("Look, a Text Input Dialog");
-        dialog.setContentText("Please enter your name:");
+    public String createDialogBox() {
+        TextInputDialog dialog = new TextInputDialog("60");
+        dialog.setTitle("Starting Note");
+        dialog.setHeaderText("Give me a starting note (0-115)");
 
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()){
-            System.out.println("Your name: " + result.get());
+            return result.get();
         }
-
-
-        return dialog;
+        else {
+            return "";
+        }
     }
-
 
     @Override
     public void start(Stage primaryStage) {
+
+        Menu mainMenu = new Menu("File");
+        MenuItem menuItem = new MenuItem("Exit");
+        mainMenu.getItems().add(menuItem);
+        menuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        MenuBar menuBar = new MenuBar();
+        menuBar.getMenus().add(mainMenu);
 
         Button playButton = new Button();
         playButton.setText("Play Scale");
@@ -49,7 +64,7 @@ public class Main extends Application
             public void handle(ActionEvent event) {
                 // create new dialog box
                 // from that dialog box, grab the input text
-                TextInputDialog dBox = createDialogBox();
+                String resultString = createDialogBox();
             }
         });
 
@@ -61,8 +76,11 @@ public class Main extends Application
         hbox.getChildren().addAll(playButton, stopButton);
         hbox.setAlignment(Pos.CENTER);
 
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(menuBar, hbox);
+        vbox.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(hbox, 300, 250);
+        Scene scene = new Scene(vbox, 300, 250);
 
         primaryStage.setTitle("Scale Player");
         primaryStage.setScene(scene);
